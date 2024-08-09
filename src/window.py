@@ -1,18 +1,17 @@
 from tkinter import Tk, BOTH, Canvas
-from geometry import Line
 
 class Window:
     def __init__(self, width, height):
         self.__root = Tk('Maze Solver')
         self.__root.protocol('WM_DELETE_WINDOW', self.close)
 
-        self.canvas = Canvas(self.__root, bg='white', width=width, height=height)
-        self.canvas.pack()
+        self.__canvas = Canvas(self.__root, bg='white', width=width, height=height)
+        self.__canvas.pack()
 
         self.running = False
     
     def __repr__(self):
-        return f"Window(root={self.__root}, canvas={self.canvas}, running={self.running})"
+        return f"Window(root={self.__root}, canvas={self.__canvas}, running={self.running})"
 
 
     def redraw(self):
@@ -29,4 +28,4 @@ class Window:
         self.running = False
 
     def draw_line(self, line):
-        line.draw(self.canvas)
+        line.draw(self.__canvas)
