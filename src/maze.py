@@ -1,9 +1,9 @@
 from time import sleep
 from geometry import Point, Line
-from window import Window
+from window import WindowItr
 
 class Cell:
-    def __init__(self, top_left_point: Point, bottom_right_point: Point, window: Window, has_left_wall=True, has_right_wall=True, has_top_wall=True, has_bottom_wall=True):
+    def __init__(self, top_left_point: Point, bottom_right_point: Point, window: WindowItr, has_left_wall = True, has_right_wall = True, has_top_wall = True, has_bottom_wall = True):
         self.__top_left_point = top_left_point
         self.__bottom_right_point = bottom_right_point
         self.center_point = Point((top_left_point.x + bottom_right_point.x) / 2, (top_left_point.y + bottom_right_point.y) / 2)
@@ -33,7 +33,7 @@ class Cell:
 
 
 class Maze:
-    def __init__(self, window: Window, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
+    def __init__(self, window: WindowItr = None, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
         self.__window = window
         self.__top_left = top_left
         self.__num_rows = num_rows
@@ -69,7 +69,7 @@ class Maze:
             col_idx += 1
 
     def __draw_cell(self, row, col):
-        self.__cells[row][col].draw()
+        self.__cells[col][row].draw()
         self.__animate()
     
     def __animate(self):
