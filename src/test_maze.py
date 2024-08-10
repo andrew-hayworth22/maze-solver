@@ -77,3 +77,21 @@ class TestMaze(unittest.TestCase):
         cell_height = maze._cells[0][0]._bottom_right_point.y - maze._cells[0][0]._top_left_point.y
         self.assertEqual(cell_x, cell_width)
         self.assertEqual(cell_y, cell_height)
+
+    def test_entrance_and_exit_broken_default(self):
+        default_rows, default_cols = 10, 10
+        maze = Maze()
+
+        entrance = maze._cells[0][0]
+        exit = maze._cells[default_cols-1][default_rows-1]
+        self.assertFalse(entrance.has_left_wall)
+        self.assertFalse(exit.has_right_wall)
+
+    def test_entrance_and_exit_broken_rectangle(self):
+        rows, cols= 20, 30
+        maze = Maze(num_rows=rows, num_cols=cols)
+
+        entrance = maze._cells[0][0]
+        exit = maze._cells[cols-1][rows-1]
+        self.assertFalse(entrance.has_left_wall)
+        self.assertFalse(exit.has_right_wall)

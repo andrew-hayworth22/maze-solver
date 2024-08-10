@@ -1,3 +1,4 @@
+from random import randint
 from time import sleep
 from geometry import Point, Line
 from window import Window
@@ -14,15 +15,20 @@ class Cell:
         self.has_top_wall = has_top_wall
         self.has_bottom_wall = has_bottom_wall
     
+    def __repr__(self):
+        return f"Cell(top_left_point={self._top_left_point}, bottom_right_point={self._bottom_right_point}, left_wall={self.has_left_wall}, right={self.has_right_wall}, top={self.has_top_wall}, bottom={self.has_bottom_wall})"
+    
     def draw(self):
-        if self.has_left_wall:
-            self._window.draw_line(Line(self._top_left_point, Point(self._top_left_point.x, self._bottom_right_point.y)))
-        if self.has_right_wall:
-            self._window.draw_line(Line(self._bottom_right_point, Point(self._bottom_right_point.x, self._top_left_point.y)))
-        if self.has_top_wall:
-            self._window.draw_line(Line(self._top_left_point, Point(self._bottom_right_point.x, self._top_left_point.y)))
-        if self.has_bottom_wall:
-            self._window.draw_line(Line(self._bottom_right_point, Point(self._top_left_point.x, self._bottom_right_point.y)))
+        if self._window is None:
+            return
+
+        line_color = "black"
+        bg_color = "white"
+
+        self._window.draw_line(Line(self._top_left_point, Point(self._top_left_point.x, self._bottom_right_point.y), fill_color=line_color if self.has_left_wall else bg_color))
+        self._window.draw_line(Line(self._bottom_right_point, Point(self._bottom_right_point.x, self._top_left_point.y), fill_color=line_color if self.has_right_wall else bg_color))
+        self._window.draw_line(Line(self._top_left_point, Point(self._bottom_right_point.x, self._top_left_point.y), fill_color=line_color if self.has_top_wall else bg_color))
+        self._window.draw_line(Line(self._bottom_right_point, Point(self._top_left_point.x, self._bottom_right_point.y), fill_color=line_color if self.has_bottom_wall else bg_color))
 
     def draw_move(self, to_cell, undo = False):
         color = "red"
@@ -65,19 +71,28 @@ class Maze:
                 self._cells[curr_x].append(cell)
             curr_x += 1
         
-        if self._window is None:
-            return
-
         col_idx = 0
         for col in self._cells:
             for row in range(len(col)):
                 self.__draw_cell(row, col_idx)
             col_idx += 1
+        
+        self.__break_entrance_and_exit()
 
     def __draw_cell(self, row, col):
         self._cells[col][row].draw()
         self.__animate()
     
     def __animate(self):
+        if self._window is None:
+            return
+
         self._window.redraw()
         sleep(.05)
+    
+    def __break_entrance_and_exit(self):
+        self._cells[0][0].has_left_wall = False
+        self.__draw_cell(0, 0)
+
+        self._cells[self._num_cols-1][self._num_rows-1].has_right_wall = False
+        self.__draw_cell(self._num_rows-1, self._num_cols-1)
