@@ -3,11 +3,12 @@ from geometry import Point, Line
 from window import Window
 
 class Cell:
-    def __init__(self, top_left_point: Point, bottom_right_point: Point, window: Window, has_left_wall = True, has_right_wall = True, has_top_wall = True, has_bottom_wall = True):
-        self.__top_left_point = top_left_point
-        self.__bottom_right_point = bottom_right_point
+    def __init__(self, top_left_point: Point, bottom_right_point: Point, window: Window = None, has_left_wall = True, has_right_wall = True, has_top_wall = True, has_bottom_wall = True):
+        self._top_left_point = top_left_point
+        self._bottom_right_point = bottom_right_point
+        self._window = window
+
         self.center_point = Point((top_left_point.x + bottom_right_point.x) / 2, (top_left_point.y + bottom_right_point.y) / 2)
-        self.__window = window
         self.has_left_wall = has_left_wall
         self.has_right_wall = has_right_wall
         self.has_top_wall = has_top_wall
@@ -15,13 +16,13 @@ class Cell:
     
     def draw(self):
         if self.has_left_wall:
-            self.__window.draw_line(Line(self.__top_left_point, Point(self.__top_left_point.x, self.__bottom_right_point.y)))
+            self._window.draw_line(Line(self._top_left_point, Point(self._top_left_point.x, self._bottom_right_point.y)))
         if self.has_right_wall:
-            self.__window.draw_line(Line(self.__bottom_right_point, Point(self.__bottom_right_point.x, self.__top_left_point.y)))
+            self._window.draw_line(Line(self._bottom_right_point, Point(self._bottom_right_point.x, self._top_left_point.y)))
         if self.has_top_wall:
-            self.__window.draw_line(Line(self.__top_left_point, Point(self.__bottom_right_point.x, self.__top_left_point.y)))
+            self._window.draw_line(Line(self._top_left_point, Point(self._bottom_right_point.x, self._top_left_point.y)))
         if self.has_bottom_wall:
-            self.__window.draw_line(Line(self.__bottom_right_point, Point(self.__top_left_point.x, self.__bottom_right_point.y)))
+            self._window.draw_line(Line(self._bottom_right_point, Point(self._top_left_point.x, self._bottom_right_point.y)))
 
     def draw_move(self, to_cell, undo = False):
         color = "red"
@@ -29,49 +30,54 @@ class Cell:
             color = "gray"
 
         line = Line(self.center_point, to_cell.center_point, fill_color=color)
-        self.__window.draw_line(line)
+        self._window.draw_line(line)
 
 
 class Maze:
     def __init__(self, window: Window = None, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
-        self.__window = window
-        self.__top_left = top_left
-        self.__num_rows = num_rows
-        self.__num_cols = num_cols
-        self.__cell_size_x = cell_size_x
-        self.__cell_size_y = cell_size_y
+        self._window = window
+        self._top_left = top_left
+        self._num_rows = num_rows
+        self._num_cols = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
 
+        self._cells = []
         self.__create_cells()
 
-    def __create_cells(self):
-        self.__cells = []
+    def __repr__(self):
+        return f"Maze(window={self._window}, top_left={self._top_left}, num_rows={self._num_rows}, num_cols={self._num_cols}, cell_size(x,y)={self._cell_size_x},{self._cell_size_y}"
 
-        start_x = self.__top_left.x
-        end_x = self.__top_left.x + (self.__cell_size_x * self.__num_rows)
+    def __create_cells(self):
+        start_x = self._top_left.x
+        end_x = self._top_left.x + (self._cell_size_x * self._num_cols)
         curr_x = 0
 
-        start_y = self.__top_left.y
-        end_y = self.__top_left.y + (self.__cell_size_y * self.__num_cols)
+        start_y = self._top_left.y
+        end_y = self._top_left.y + (self._cell_size_y * self._num_rows)
 
-        for x in range(start_x, end_x, self.__cell_size_x):
-            self.__cells.append([])
-            for y in range(start_y, end_y, self.__cell_size_y):
+        for x in range(start_x, end_x, self._cell_size_x):
+            self._cells.append([])
+            for y in range(start_y, end_y, self._cell_size_y):
                 top_left = Point(x, y)
-                bottom_right = Point(x + self.__cell_size_x, y + self.__cell_size_y)
-                cell = Cell(top_left, bottom_right, self.__window)
-                self.__cells[curr_x].append(cell)
+                bottom_right = Point(x + self._cell_size_x, y + self._cell_size_y)
+                cell = Cell(top_left, bottom_right, self._window)
+                self._cells[curr_x].append(cell)
             curr_x += 1
+        
+        if self._window is None:
+            return
 
         col_idx = 0
-        for col in self.__cells:
+        for col in self._cells:
             for row in range(len(col)):
                 self.__draw_cell(row, col_idx)
             col_idx += 1
 
     def __draw_cell(self, row, col):
-        self.__cells[col][row].draw()
+        self._cells[col][row].draw()
         self.__animate()
     
     def __animate(self):
-        self.__window.redraw()
+        self._window.redraw()
         sleep(.05)
