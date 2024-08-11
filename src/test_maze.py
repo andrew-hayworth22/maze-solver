@@ -95,3 +95,10 @@ class TestMaze(unittest.TestCase):
         exit = maze._cells[cols-1][rows-1]
         self.assertFalse(entrance.has_left_wall)
         self.assertFalse(exit.has_right_wall)
+
+    def test_maze_visited_status(self):
+        maze = Maze()
+        
+        for col in maze._cells:
+            for cell in col:
+                self.assertFalse(cell.visited)

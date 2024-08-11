@@ -1,4 +1,4 @@
-from random import randint
+import random
 from time import sleep
 from geometry import Point, Line
 from window import Window
@@ -14,6 +14,7 @@ class Cell:
         self.has_right_wall = has_right_wall
         self.has_top_wall = has_top_wall
         self.has_bottom_wall = has_bottom_wall
+        self.visited = False
     
     def __repr__(self):
         return f"Cell(top_left_point={self._top_left_point}, bottom_right_point={self._bottom_right_point}, left_wall={self.has_left_wall}, right={self.has_right_wall}, top={self.has_top_wall}, bottom={self.has_bottom_wall})"
@@ -40,13 +41,15 @@ class Cell:
 
 
 class Maze:
-    def __init__(self, window: Window = None, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
+    def __init__(self, window: Window = None, seed = None, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
         self._window = window
         self._top_left = top_left
         self._num_rows = num_rows
         self._num_cols = num_cols
         self._cell_size_x = cell_size_x
         self._cell_size_y = cell_size_y
+        if seed is not None:
+            random.seed(seed)
 
         self._cells = []
         self.__create_cells()
@@ -78,6 +81,8 @@ class Maze:
             col_idx += 1
         
         self.__break_entrance_and_exit()
+        self.__break_walls(0, 0)
+        self.__reset_visited()
 
     def __draw_cell(self, row, col):
         self._cells[col][row].draw()
@@ -96,3 +101,36 @@ class Maze:
 
         self._cells[self._num_cols-1][self._num_rows-1].has_right_wall = False
         self.__draw_cell(self._num_rows-1, self._num_cols-1)
+    
+    def __break_walls(self, col, row):
+        self._cells[col][row].visited = True
+        self.__draw_cell(row, col)
+
+        directions = [('top', 0, -1), ('right', 1, 0), ('bottom', 0, 1), ('left', -1, 0)]
+        random.shuffle(directions)
+
+        for direction in directions:
+            direction_name = direction[0]
+            next_col = col + direction[1]
+            next_row = row + direction[2]
+
+            if 0 <= next_col < self._num_cols and 0 <= next_row < self._num_rows and not self._cells[next_col][next_row].visited:
+                if direction_name == 'top':
+                    self._cells[col][row].has_top_wall = False
+                    self._cells[next_col][next_row].has_bottom_wall = False
+                elif direction_name == 'right':
+                    self._cells[col][row].has_right_wall = False
+                    self._cells[next_col][next_row].has_left_wall= False
+                elif direction_name == 'bottom':
+                    self._cells[col][row].has_bottom_wall = False
+                    self._cells[next_col][next_row].has_top_wall= False
+                else:
+                    self._cells[col][row].has_left_wall = False
+                    self._cells[next_col][next_row].has_right_wall= False
+
+                self.__break_walls(next_col, next_row)
+
+    def __reset_visited(self):
+        for col in self._cells:
+            for cell in col:
+                cell.visited = False
