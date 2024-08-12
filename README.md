@@ -1,5 +1,6 @@
 # Maze Solver
 A Python application that visualized the generation and solving of two-dimensional mazes using a DFS algorithm.
+
 ![Test status](https://github.com/andrew-hayworth22/maze-solver/actions/workflows/tests.yml/badge.svg)
 
 ## Running the solver
