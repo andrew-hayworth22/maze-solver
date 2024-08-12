@@ -134,3 +134,52 @@ class Maze:
         for col in self._cells:
             for cell in col:
                 cell.visited = False
+
+    def solve(self):
+        self.__solve_r(0, 0)
+
+    def __solve_r(self, col, row):
+        self.__animate()
+        cell = self._cells[col][row]
+        cell.visited = True
+
+        if col == self._num_cols-1 and row == self._num_rows-1:
+            return True
+
+        directions = [('top', 0, -1), ('right', 1, 0), ('bottom', 0, 1), ('left', -1, 0)]
+
+        for direction in directions:
+            direction_name = direction[0]
+            next_col = col + direction[1]
+            next_row = row + direction[2]
+
+            if 0 <= next_col < self._num_cols and 0 <= next_row < self._num_rows:
+                other_cell = self._cells[next_col][next_row]
+                if other_cell.visited:
+                    continue
+                if direction_name == 'top' and not cell.has_top_wall:
+                    cell.draw_move(other_cell)
+                    if self.__solve_r(next_col, next_row):
+                        return True
+                    else:
+                        cell.draw_move(other_cell, True)
+                elif direction_name == 'right' and not self._cells[col][row].has_right_wall:
+                    cell.draw_move(other_cell)
+                    if self.__solve_r(next_col, next_row):
+                        return True
+                    else:
+                        cell.draw_move(other_cell, True)
+                elif direction_name == 'bottom' and not self._cells[col][row].has_bottom_wall:
+                    cell.draw_move(other_cell)
+                    if self.__solve_r(next_col, next_row):
+                        return True
+                    else:
+                        cell.draw_move(other_cell, True)
+                elif direction_name == 'left' and not self._cells[col][row].has_left_wall:
+                    cell.draw_move(other_cell)
+                    if self.__solve_r(next_col, next_row):
+                        return True
+                    else:
+                        cell.draw_move(other_cell, True)
+        
+        return False

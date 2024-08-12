@@ -15,6 +15,7 @@ def main():
     # cell2.draw_move(cell3)
 
     maze = Maze(window)
+    maze.solve()
 
     window.wait_for_close()
 
