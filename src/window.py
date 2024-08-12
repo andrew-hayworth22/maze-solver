@@ -1,4 +1,5 @@
-from tkinter import Tk, BOTH, Canvas
+from tkinter import Tk, BOTH, Canvas, Button
+from geometry import Line
 
 class Window:
     def __init__(self, width, height):
@@ -26,5 +27,9 @@ class Window:
     def close(self):
         self.running = False
 
-    def draw_line(self, line):
+    def draw_line(self, line: Line):
         line.draw(self.__canvas)
+
+    def draw_button(self, text: str, callback, x: int, y: int):
+        button = Button(self.__root, text=text, command=callback, bd='1')
+        button.place(x=x, y=y)

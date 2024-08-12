@@ -3,6 +3,15 @@ from time import sleep
 from geometry import Point, Line
 from window import Window
 
+DEFAULT_CELL_SIZE_X = 50
+DEFAULT_CELL_SIZE_Y = 50
+DEFAULT_ROWS = 10
+DEFAULT_COLS = 10
+DEFAULT_STARTING_POINT = Point(10, 10)
+
+MOVE_COLOR = "red"
+BACKTRACK_COLOR = "grey"
+
 class Cell:
     def __init__(self, top_left_point: Point, bottom_right_point: Point, window: Window = None, has_left_wall = True, has_right_wall = True, has_top_wall = True, has_bottom_wall = True):
         self._top_left_point = top_left_point
@@ -41,7 +50,7 @@ class Cell:
 
 
 class Maze:
-    def __init__(self, window: Window = None, seed = None, top_left = Point(10, 10), num_rows = 10, num_cols = 10, cell_size_x = 50, cell_size_y = 50):
+    def __init__(self, window: Window = None, seed = None, top_left = DEFAULT_STARTING_POINT, num_rows = DEFAULT_ROWS, num_cols = DEFAULT_COLS, cell_size_x = DEFAULT_CELL_SIZE_X, cell_size_y = DEFAULT_CELL_SIZE_Y):
         self._window = window
         self._top_left = top_left
         self._num_rows = num_rows
